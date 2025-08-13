@@ -162,7 +162,7 @@ def calculate_total(cart, catalog, discounts):
                         discount_amount_for_item = free_items * unit_price
                         applied_discounts[product] += discount_amount_for_item
                         
-                        print(f"DEBUG: {product}: Qty={quantity}, Effective Qty={effective_quantity}, Free Items={free_items}, Discount=${discount_amount_for_item:.2f}")
+                        print(f"DEBUG: {product}: Qty={quantity}, Effective Qty={effective_quantity}, Free Items={free_items}, Discount=GHC{discount_amount_for_item:.2f}")
 
             cost_for_item = effective_quantity * unit_price
             total_cost += cost_for_item
@@ -203,7 +203,7 @@ def print_invoice(cart, catalog, discounts):
             # Calculate the actual cost for this line item after discount
             line_total_after_discount = line_total_before_discount - discount_for_this_product
 
-            print(f"{product:<20} {quantity:>5} ${unit_price:>11.2f} ${line_total_after_discount:>11.2f} ${discount_for_this_product:>11.2f}")
+            print(f"{product:<20} {quantity:>5} GHC{unit_price:>11.2f} GHC{line_total_after_discount:>11.2f} GHC{discount_for_this_product:>11.2f}")
         else:
             print(f"{product:<20} {quantity:>5} (Item not found in catalog!)")
     
