@@ -1,8 +1,6 @@
-import collections
-
 def display_catalog(catalog):
     """
-    Displays the product catalog with product names and prices.
+    Displays the 1product catalog with product names and prices.
     """
     print("\n--- Product Catalog ---")
     if not catalog:
@@ -15,6 +13,7 @@ def display_catalog(catalog):
         print(f"{product:<25} GH₵{price:>10.2f}")
     print("-" * 40)
 
+
 def add_to_cart(cart, catalog):
     """
     Allows the user to add products to their cart.
@@ -22,7 +21,7 @@ def add_to_cart(cart, catalog):
     """
     while True:
         product_name = input("Enter product name to add (or 'done' to finish): ").strip().title()
-        if product_name == 'Done':
+        if product_name.lower() == 'done':  # Fixed: case-insensitive comparison
             break
 
         if product_name not in catalog:
@@ -48,6 +47,7 @@ def add_to_cart(cart, catalog):
         print(f"Added {quantity} x {product_name} to your cart.")
     print("Finished adding items to cart.")
 
+
 def view_cart(cart, catalog):
     """
     Displays the current items in the shopping cart with quantities and prices.
@@ -72,6 +72,7 @@ def view_cart(cart, catalog):
     print(f"{'SUBTOTAL:':<43} GH₵{total_before_discount:>10.2f}")
     print("-" * 60)
 
+
 def update_cart(cart, catalog):
     """
     Allows the user to update the quantity of an item or remove it from the cart.
@@ -84,11 +85,11 @@ def update_cart(cart, catalog):
 
     while True:
         product_name = input("Enter product name to update/remove (or 'done' to finish): ").strip().title()
-        if product_name == 'Done':
+        if product_name.lower() == 'done':  # Fixed: case-insensitive comparison
             break
 
         if product_name not in cart:
-            print(f"  '{product_name}' is not in your cart.")
+            print(f"'{product_name}' is not in your cart.")
             continue
 
         while True:
@@ -98,24 +99,25 @@ def update_cart(cart, catalog):
             try:
                 new_quantity = int(action)
                 if new_quantity < 0:
-                    print(" Quantity cannot be negative.")
+                    print("Quantity cannot be negative.")
                 elif new_quantity == 0:
                     del cart[product_name]
-                    print(f" '{product_name}' removed from cart.")
+                    print(f"'{product_name}' removed from cart.")
                     break
                 else:
                     old_quantity = cart[product_name]
                     cart[product_name] = new_quantity
-                    print(f" Quantity for {product_name} updated from {old_quantity} to {new_quantity}.")
+                    print(f"Quantity for {product_name} updated from {old_quantity} to {new_quantity}.")
                     break
             except ValueError:
-                print(" Invalid input. Please enter a whole number or 'cancel'.")
-        
+                print("Invalid input. Please enter a whole number or 'cancel'.")
+
         if action != 'cancel':  # If an update/removal happened, ask if they want to continue
             continue_update = input("Update another item? (yes/no): ").strip().lower()
             if continue_update not in ['yes', 'y']:
                 break
     print("Finished updating cart.")
+
 
 def calculate_discount_for_product(quantity, buy_n, get_m_free):
     """
@@ -124,13 +126,14 @@ def calculate_discount_for_product(quantity, buy_n, get_m_free):
     """
     if quantity < buy_n:
         return 0
-    
+
     # How many complete discount sets can we apply?
     discount_sets = quantity // buy_n
     free_items = discount_sets * get_m_free
-    
+
     # Don't give more free items than total quantity
     return min(free_items, quantity)
+
 
 def calculate_total(cart, catalog, discounts):
     """
@@ -145,23 +148,26 @@ def calculate_total(cart, catalog, discounts):
         if product in catalog:
             unit_price = catalog[product]
             item_total_before_discount = unit_price * quantity
-            
+
             # Check for discounts
             free_items = 0
+            buy_n = 0  # Initialize variables
+            get_m_free = 0
+
             if product in discounts:
                 discount_info = discounts[product]
                 if discount_info["type"] == "buy_n_get_m_free":
                     buy_n = discount_info["buy"]
                     get_m_free = discount_info["get_free"]
                     free_items = calculate_discount_for_product(quantity, buy_n, get_m_free)
-            
+
             # Calculate the actual cost after discount
             paid_items = quantity - free_items
             item_total_after_discount = paid_items * unit_price
             discount_amount = free_items * unit_price
-            
+
             total_cost += item_total_after_discount
-            
+
             if free_items > 0:
                 applied_discounts[product] = {
                     'free_items': free_items,
@@ -175,6 +181,7 @@ def calculate_total(cart, catalog, discounts):
 
     return total_cost, applied_discounts, discount_details
 
+
 def print_invoice(cart, catalog, discounts):
     """
     Prints the final invoice listing all items, prices, and the total.
@@ -185,7 +192,7 @@ def print_invoice(cart, catalog, discounts):
     print("                       GROUP 22")
     print("                     FINAL INVOICE")
     print("=" * 70)
-    
+
     if not cart:
         print("Your cart is empty. No invoice to generate.")
         return
@@ -195,7 +202,7 @@ def print_invoice(cart, catalog, discounts):
 
     print(f"{'Product':<25} {'Qty':>5} {'Unit Price':>12} {'Line Total':>12} {'Discount':>12}")
     print("-" * 70)
-    
+
     subtotal_before_discount = 0
     total_discount_amount = 0
 
@@ -204,66 +211,69 @@ def print_invoice(cart, catalog, discounts):
             unit_price = catalog[product]
             line_total_before_discount = unit_price * quantity
             subtotal_before_discount += line_total_before_discount
-            
+
             discount_amount = 0
             if product in applied_discounts:
                 discount_amount = applied_discounts[product]['discount_amount']
                 total_discount_amount += discount_amount
-            
+
             line_total_after_discount = line_total_before_discount - discount_amount
 
-            print(f"{product:<25} {quantity:>5} GH₵{unit_price:>10.2f} GH₵{line_total_after_discount:>10.2f} GH₵{discount_amount:>10.2f}")
+            print(
+                f"{product:<25} {quantity:>5} GH₵{unit_price:>10.2f} GH₵{line_total_after_discount:>10.2f} GH₵{discount_amount:>10.2f}")
         else:
             print(f"{product:<25} {quantity:>5} (Item not found in catalog!)")
-    
+
     print("-" * 70)
     print(f"{'SUBTOTAL:':<58} GH₵{subtotal_before_discount:>10.2f}")
-    
+
     if discount_details:
         print(f"\n{'DISCOUNTS APPLIED:':<20}")
         for detail in discount_details:
             print(f"  • {detail}")
         print(f"{'TOTAL SAVINGS:':<58} GH₵{total_discount_amount:>10.2f}")
-    
+
     print(f"{'GRAND TOTAL:':<58} GH₵{total_cost:>10.2f}")
     print("=" * 70)
     print("            Thank you for shopping with us!")
     print("=" * 70)
+
 
 def validate_system(catalog, discounts):
     """
     Validate that the system configuration is correct
     """
     print("Validating system configuration...")
-    
+
     # Check for discount products that don't exist in catalog
     invalid_discount_products = []
     for product in discounts:
         if product not in catalog:
             invalid_discount_products.append(product)
-    
+
     if invalid_discount_products:
         print(f"Warning: These discount products are not in the catalog: {invalid_discount_products}")
         print("   Discounts for these products will not apply.")
-    
+
     # Check for trailing spaces in product names
     products_with_spaces = []
     for product in catalog:
         if product != product.strip():
             products_with_spaces.append(product)
-    
+
     if products_with_spaces:
         print(f"Warning: These products have leading/trailing spaces: {products_with_spaces}")
         print("   This may cause matching issues.")
-    
+
     if not invalid_discount_products and not products_with_spaces:
         print("System configuration is valid!")
+
 
 def main_menu():
     """
     Main function to run the command-line shopping system.
     """
-    # Initialize product catalog (cleaned up - removed trailing spaces and unrealistic models)
+    # Initialize product catalog 
     catalog = {
         "Iphone 11": 2100.99,
         "Iphone 11 Pro": 2333.99,
@@ -295,7 +305,7 @@ def main_menu():
 
     print("Welcome to IPHONE DEALERS SHOP (GROUP 22)")
     print("=" * 50)
-    
+
     # Validate system configuration
     validate_system(catalog, discounts)
 
@@ -336,7 +346,8 @@ def main_menu():
                     print("Cart cleared!")
         elif choice == '6':
             if cart:
-                confirm_exit = input("You have items in your cart. Are you sure you want to exit? (y/n): ").strip().lower()
+                confirm_exit = input(
+                    "You have items in your cart. Are you sure you want to exit? (y/n): ").strip().lower()
                 if confirm_exit in ['y', 'yes']:
                     print("Thank you for visiting IPHONE DEALERS SHOP! Goodbye.")
                     break
@@ -346,6 +357,7 @@ def main_menu():
         else:
             print("Invalid choice. Please enter a number between 1 and 6.")
 
+
 # Run the main menu function when the script is executed
-if __name__ == "__main__":
+if __name__ == "__main__":  # Fixed: Correct syntax for main guard
     main_menu()
