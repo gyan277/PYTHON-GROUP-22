@@ -219,8 +219,6 @@ def main_menu():
     """
     # Initialize product catalog
     catalog = {
-        "Iphone XS MAX": 2050.99,
-        "Iphone XR": 2545.99,
         "Iphone 11": 3100.99,
         "Iphone 11 pro": 3333.99,
         "Iphone 12": 3476.99,
@@ -258,7 +256,7 @@ def main_menu():
     print("Welcome to IPHONE DEALERS SHOP (GROUP 22)")
 
     while True:
-        print("\nDamnnn that's the main menu")
+        print("\nSHOPPING MAIN MENU ")
         print("1. View Products")
         print("2. Add Item to Cart")
         print("3. View Cart")
